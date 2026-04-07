@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Don QuixAr · Don Ar Climatizações</title>
+  
+  <!-- Google Fonts: Nunito -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
+  
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <style>
+    /* ===== DESIGN SYSTEM & VARIABLES ===== */
+    :root {
+      --white: #FFFFFF;
+      --gray-50: #F9FAFB;
+      --gray-100: #F3F4F6;
+      --gray-300: #D1D5DB;
+      --gray-500: #6B7280;
+      --gray-900: #111827;
+      --blue-500: #3B82F6;
+      --blue-600: #2563EB;
+      --red-100: #FEE2E2;
+      --red-700: #B91C1C;
+      
+      --font-family: 'Nunito', sans-serif;
+      --radius-card: 12px;
+      --radius-input: 24px;
+      --radius-bubble: 18px;
+      --shadow-soft: 0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.04);
+      --shadow-hover: 0 4px 12px rgba(0,0,0,0.12);
+      --transition: 150ms ease;
+    }
+
+    /* ===== RESET & BASE ===== */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      height: 100%;
+      font-family: var(--font-family);
+      background: var(--gray-50);
+      color: var(--gray-900);
+      -webkit-font-smoothing: antialiased;
+      overflow: hidden;
+    }
+
+    /* ===== APP CONTAINER ===== */
+    #app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      max-width: 900px;
+      margin: 0 auto;
+      width: 100%;
+      position: relative;
+    }
+
+    /* ===== WELCOME SCREEN (Estado 1) ===== */
+    #welcome-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      padding-bottom: 100px;
+      text-align: center;
+      transition: opacity 300ms ease, transform 300ms ease;
+      z-index: 20;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--gray-50);
+    }
+    #welcome-screen.hidden {
+      opacity: 0;
+      transform: translateY(-20px);
+      pointer-events: none;
+    }
+    
+    .welcome-icon {
+      width: 48px;
+      height: 48px;
+      color: var(--blue-500);
+      margin-bottom: 24px;
+      animation: floatIcon 3s ease-in-out infinite;
+    }
+    @keyframes floatIcon {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+    
+    .welcome-title {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 8px;
+      line-height: 1.2;
+    }
+    
+    .welcome-subtitle {
+      font-size: 1.1rem;
+      font-weight: 400;
+      color: var(--gray-500);
+      margin-bottom: 32px;
+      max-width: 400px;
+    }
+    
+    /* Sugestion Cards Grid */
+    .suggestions-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      width: 100%;
+      max-width: 600px;
+      margin-bottom: 24px;
+    }
+    @media (min-width: 640px) {
+      .suggestions-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    
+    .suggestion-card {
+      background: var(--white);
+      border: 1px solid var(--gray-300);
+      border-radius: var(--radius-card);
+      padding: 16px;
+      text-align: left;
+      cursor: pointer;
+      transition: all var(--transition);
+      animation: fadeInUp 300ms ease backwards;
+    }
+    .suggestion-card:hover {
+      border-color: var(--blue-500);
+      box-shadow: var(--shadow-hover);
+      transform: translateY(-2px);
+    }
+    .suggestion-card:active {
+      transform: translateY(0);
+    }
+    .suggestion-card:nth-child(1) { animation-delay: 100ms; }
+    .suggestion-card:nth-child(2) { animation-delay: 200ms; }
+    .suggestion-card:nth-child(3) { animation-delay: 300ms; }
+    .suggestion-card:nth-child(4) { animation-delay: 400ms; }
+    .suggestion-card:nth-child(5) { animation-delay: 500ms; }
+    .suggestion-card:nth-child(6) { animation-delay: 600ms; }
+    
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .suggestion-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--gray-900);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .suggestion-subtitle {
+      font-size: 0.8rem;
+      color: var(--gray-500);
+      line-height: 1.4;
+    }
+
+    /* ===== CHAT SCREEN (Estado 2) ===== */
+    #chat-screen {
+      display: none;
+      flex-direction: column;
+      height: 100%;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 300ms ease, transform 300ms ease;
+    }
+    #chat-screen.active {
+      display: flex;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-300);
+      flex-shrink: 0;
+      z-index: 10;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--gray-900);
+    }
+    .logo-icon {
+      width: 24px;
+      height: 24px;
+      color: var(--blue-500);
+    }
+    .agent-name {
+      font-size: 0.85rem;
+      color: var(--gray-500);
+      margin-left: 4px;
+    }
+    .new-chat-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: transparent;
+      border: 1px solid var(--gray-300);
+      color: var(--gray-700);
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+    .new-chat-btn:hover {
+      background: var(--gray-100);
+      border-color: var(--gray-500);
+    }
+    .new-chat-btn i { width: 16px; height: 16px; }
+
+    /* Messages Area */
+    #messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      scroll-behavior: smooth;
+      padding-bottom: 100px;
+    }
+
+    /* Message Bubbles */
+    .message {
+      display: flex;
+      gap: 12px;
+      max-width: 85%;
+      animation: slideIn 200ms ease;
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .message.user {
+      align-self: flex-end;
+      flex-direction: row-reverse;
+    }
+    
+    .message-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 0.85rem;
+    }
+    .message.don .message-avatar {
+      background: var(--blue-500);
+      color: white;
+    }
+    .message.user .message-avatar {
+      background: var(--gray-300);
+      color: var(--gray-700);
+    }
+    
+    .bubble {
+      padding: 14px 18px;
+      border-radius: var(--radius-bubble);
+      font-size: 0.95rem;
+      line-height: 1.5;
+      position: relative;
+      word-wrap: break-word;
+    }
+    .message.don .bubble {
+      background: var(--gray-100);
+      color: var(--gray-900);
+      border-bottom-left-radius: 4px;
+    }
+    .message.user .bubble {
+      background: var(--blue-500);
+      color: white;
+      border-bottom-right-radius: 4px;
+    }
+    .bubble p { margin: 0 0 8px 0; }
+    .bubble p:last-child { margin-bottom: 0; }
+
+    /* Error Message */
+    .bubble.error {
+      background: var(--red-100);
+      color: var(--red-700);
+      border: 1px solid #FCA5A5;
+    }
+
+    /* Action Buttons [BTN parser] */
+    .action-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+      padding-top: 8px;
+      border-top: 1px solid var(--gray-300);
+    }
+    .message.user .action-buttons {
+      border-top-color: rgba(255,255,255,0.3);
+    }
+    .action-btn {
+      background: var(--white);
+      border: 1px solid var(--blue-500);
+      color: var(--blue-500);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 44px;
+    }
+    .action-btn:hover {
+      background: var(--blue-500);
+      color: white;
+    }
+    .action-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* Loading Dots Animation */
+    .loading {
+      display: flex;
+      gap: 4px;
+      padding: 14px 18px;
+      background: var(--gray-100);
+      border-radius: var(--radius-bubble);
+      border-bottom-left-radius: 4px;
+      width: fit-content;
+    }
+    .loading-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--gray-500);
+      border-radius: 50%;
+      animation: bounce 1.4s infinite ease-in-out both;
+    }
+    .loading-dot:nth-child(1) { animation-delay: -0.32s; }
+    .loading-dot:nth-child(2) { animation-delay: -0.16s; }
+    @keyframes bounce {
+      0%, 80%, 100% { transform: scale(0); }
+      40% { transform: scale(1); }
+    }
+
+    /* Partner Form Inline */
+    .partner-form {
+      background: var(--white);
+      border: 1px solid var(--gray-300);
+      border-radius: var(--radius-card);
+      padding: 20px;
+      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: var(--shadow-soft);
+    }
+    .partner-form h4 {
+      font-weight: 700;
+      font-size: 1rem;
+      margin-bottom: 4px;
+    }
+    .partner-form input,
+    .partner-form textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--gray-300);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .partner-form input:focus,
+    .partner-form textarea:focus {
+      border-color: var(--blue-500);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    .partner-form textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+    .partner-form button {
+      background: var(--blue-500);
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      align-self: flex-start;
+      transition: background var(--transition);
+      min-height: 44px;
+    }
+    .partner-form button:hover {
+      background: var(--blue-600);
+    }
+    .form-confirmation {
+      background: #ECFDF5;
+      border: 1px solid #10B981;
+      color: #065F46;
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-top: 8px;
+      font-size: 0.9rem;
+    }
+
+    /* System message placeholder */
+    .system-note {
+      background: var(--gray-100);
+      border-left: 3px solid var(--blue-500);
+      padding: 10px 14px;
+      border-radius: 0 8px 8px 0;
+      font-size: 0.9rem;
+      color: var(--gray-700);
+      margin: 8px 0;
+    }
+
+    /* ===== INPUT BAR (Fixed Footer) ===== */
+    #input-area {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 900px;
+      padding: 12px 20px 20px;
+      background: linear-gradient(to top, var(--gray-50) 80%, transparent);
+      display: flex;
+      align-items: flex-end;
+      gap: 12px;
+      z-index: 30;
+    }
+    
+    .input-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      background: var(--white);
+      border: 1px solid var(--gray-300);
+      border-radius: var(--radius-input);
+      padding: 8px 16px;
+      box-shadow: var(--shadow-soft);
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .input-wrapper:focus-within {
+      border-color: var(--blue-500);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), var(--shadow-soft);
+    }
+    
+    .input-attach {
+      color: var(--gray-500);
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 50%;
+      transition: background var(--transition);
+      flex-shrink: 0;
+    }
+    .input-attach:hover {
+      background: var(--gray-100);
+      color: var(--gray-700);
+    }
+    .input-attach i { width: 20px; height: 20px; }
+    
+    #user-input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-family: inherit;
+      font-size: 1rem;
+      outline: none;
+      resize: none;
+      max-height: 120px;
+      min-height: 24px;
+      padding: 10px 0;
+      color: var(--gray-900);
+    }
+    #user-input::placeholder {
+      color: var(--gray-500);
+    }
+    
+    #send-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--gray-900);
+      color: white;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background var(--transition), transform 0.1s;
+      flex-shrink: 0;
+    }
+    #send-btn:hover {
+      background: #374151;
+    }
+    #send-btn:active {
+      transform: scale(0.95);
+    }
+    #send-btn:disabled {
+      background: var(--gray-300);
+      cursor: not-allowed;
+    }
+    #send-btn i { width: 18px; height: 18px; }
+
+    /* ===== UTILS ===== */
+    .hidden { display: none !important; }
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      border: 0;
+    }
+
+    /* ===== MOBILE OPTIMIZATIONS ===== */
+    @media (max-width: 640px) {
+      .welcome-title { font-size: 1.8rem; }
+      .welcome-subtitle { font-size: 1rem; }
+      .suggestions-grid { gap: 10px; }
+      .suggestion-card { padding: 14px; }
+      header { padding: 12px 16px; }
+      .logo { font-size: 1rem; }
+      .agent-name { display: none; }
+      .new-chat-btn { padding: 6px 12px; font-size: 0.8rem; }
+      #messages { padding: 16px; padding-bottom: 110px; }
+      .message { max-width: 92%; }
+      #input-area { padding: 10px 16px 16px; }
+      .input-wrapper { padding: 6px 12px; }
+      #send-btn { width: 36px; height: 36px; }
+    }
+
+    /* Prevent input from being hidden by keyboard on mobile */
+    @media (max-height: 600px) {
+      #welcome-screen { padding-bottom: 90px; }
+      .welcome-subtitle { margin-bottom: 20px; }
+      .suggestions-grid { margin-bottom: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    
+    <!-- ===== ESTADO 1: TELA DE BOAS-VINDAS ===== -->
+    <div id="welcome-screen">
+      <!-- Ícone SVG de floco de neve -->
+      <i data-lucide="snowflake" class="welcome-icon"></i>
+      
+      <h1 class="welcome-title">Olá, bem-vindo à Don Ar.</h1>
+      <p class="welcome-subtitle">Sou o Don QuixAr, como posso ajudar?</p>
+      
+      <!-- Cards de Sugestão (Grid 2x3 desktop, 1x6 mobile) -->
+      <div class="suggestions-grid">
+        <div class="suggestion-card" data-text="Preciso instalar um split 12.000 BTU em São Paulo, qual o valor?">
+          <div class="suggestion-title">💰 Quero um orçamento</div>
+          <div class="suggestion-subtitle">Ex: Preciso instalar um split 12.000 BTU em São Paulo, qual o valor?</div>
+        </div>
+        <div class="suggestion-card" data-text="Meu ar está gelando pouco, quero agendar uma visita técnica">
+          <div class="suggestion-title">🔧 Preciso de manutenção</div>
+          <div class="suggestion-subtitle">Ex: Meu ar está gelando pouco, quero agendar uma visita técnica</div>
+        </div>
+        <div class="suggestion-card" data-text="Tenho disponibilidade na quinta à tarde, conseguem atender?">
+          <div class="suggestion-title">📅 Agendar uma visita</div>
+          <div class="suggestion-subtitle">Ex: Tenho disponibilidade na quinta à tarde, conseguem atender?</div>
+        </div>
+        <div class="suggestion-card" data-text="Vocês atendem em Campinas ou somente São Paulo?">
+          <div class="suggestion-title">📍 Cidades atendidas</div>
+          <div class="suggestion-subtitle">Ex: Vocês atendem em Campinas ou somente São Paulo?</div>
+        </div>
+        <div class="suggestion-card" data-text="Sou técnico instalador e quero me cadastrar como parceiro Don Ar">
+          <div class="suggestion-title">🤝 Quero ser parceiro</div>
+          <div class="suggestion-subtitle">Ex: Sou técnico instalador e quero me cadastrar como parceiro Don Ar</div>
+        </div>
+        <div class="suggestion-card" data-text="Qual a diferença entre higienização e manutenção preventiva?">
+          <div class="suggestion-title">❓ Dúvidas sobre o serviço</div>
+          <div class="suggestion-subtitle">Ex: Qual a diferença entre higienização e manutenção preventiva?</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ESTADO 2: CHAT ATIVO ===== -->
+    <div id="chat-screen">
+      <!-- Header Fixo -->
+      <header>
+        <div class="logo">
+          <i data-lucide="snowflake" class="logo-icon"></i>
+          Don Ar
+          <span class="agent-name">· Don QuixAr · Atendente Virtual</span>
+        </div>
+        <button class="new-chat-btn" id="new-chat-btn" title="Nova conversa">
+          <i data-lucide="plus"></i>
+          <span class="sr-only">Nova conversa</span>
+        </button>
+      </header>
+
+      <!-- Área de Mensagens com Scroll -->
+      <div id="messages" role="log" aria-live="polite">
+        <!-- Mensagens injetadas via JS -->
+      </div>
+    </div>
+
+    <!-- ===== BARRA DE INPUT (Fixa, presente nos dois estados) ===== -->
+    <form id="input-area">
+      <div class="input-wrapper">
+        <!-- Ícone + (futuro anexo - visual apenas) -->
+        <span class="input-attach" title="Anexar (em breve)">
+          <i data-lucide="plus"></i>
+        </span>
+        
+        <textarea 
+          id="user-input" 
+          placeholder="Escreva sua mensagem..." 
+          rows="1"
+          aria-label="Digite sua mensagem"
+        ></textarea>
+        
+        <button type="submit" id="send-btn" aria-label="Enviar mensagem" disabled>
+          <i data-lucide="arrow-up"></i>
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    // ===== CONFIGURAÇÃO — alterar antes do deploy =====
+    const SERVER_URL = "https://donar.chat";
+    const CLIENT_SECRET = "token_secreto_aqui";
+    // =====================================================
+
+    // ===== SYSTEM PROMPT DO DON QUIXAR =====
+    // Define personalidade, regras e comportamento do assistente
+    const SYSTEM_PROMPT = `Você é Don QuixAr, atendente virtual da Don Ar Climatizações — empresa especializada em instalação e manutenção de ar-condicionado que atua como garantidora de padrão de qualidade em múltiplas cidades, operando via rede de parceiros instaladores certificados. 
+
+Identifique se o visitante é cliente final ou instalador parceiro e adapte a linguagem. 
+
+Para clientes: informe serviços, oriente sobre tipos de aparelho, colete informações necessárias para orçamento (BTUs, cidade, tipo de instalação) e direcione para agendamento.
+
+Para parceiros: explique o modelo de negócio (Don Ar padroniza e garante, parceiro executa e recebe repasse), colete dados de cadastro.
+
+Dados precisos de preços e agenda são consultados internamente — diga "deixa eu verificar" quando perguntado e simule breve pausa.
+
+Seja cordial, objetivo e humano. Máximo 3 parágrafos por resposta. Emojis com moderação.
+
+IMPORTANTE: Sempre que o usuário demonstrar intenção de fechar negócio, agendar, precisar de suporte técnico urgente ou querer falar com humano, inclua ao final da resposta os marcadores de ação no formato exato: [BTN:texto|ação]`;
+
+    // ===== ESTADO DA APLICAÇÃO =====
+    const state = {
+      conversationHistory: [
+        { role: "system", content: SYSTEM_PROMPT }
+      ],
+      hasStartedChat: false,
+      isWaiting: false
+    };
+
+    // ===== ELEMENTOS DOM =====
+    const welcomeScreen = document.getElementById('welcome-screen');
+    const chatScreen = document.getElementById('chat-screen');
+    const messagesEl = document.getElementById('messages');
+    const inputEl = document.getElementById('user-input');
+    const formEl = document.getElementById('input-area');
+    const sendBtn = document.getElementById('send-btn');
+    const newChatBtn = document.getElementById('new-chat-btn');
+
+    // ===== INICIALIZAÇÃO =====
+    function init() {
+      lucide.createIcons();
+      setupEventListeners();
+      enableInput();
+      // Focar input após breve delay para mobile
+      setTimeout(() => inputEl.focus(), 300);
+    }
+
+    // ===== EVENT LISTENERS =====
+    function setupEventListeners() {
+      // Cards de sugestão
+      document.querySelectorAll('.suggestion-card').forEach((card, index) => {
+        card.addEventListener('click', () => {
+          const text = card.dataset.text;
+          handleUserMessage(text);
+        });
+      });
+
+      // Form submit
+      formEl.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const text = inputEl.value.trim();
+        if (text && !state.isWaiting) {
+          handleUserMessage(text);
+          inputEl.value = '';
+          autoResizeInput();
+        }
+      });
+
+      // Auto-resize textarea
+      inputEl.addEventListener('input', autoResizeInput);
+
+      // Enter para enviar (Shift+Enter para nova linha)
+      inputEl.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          formEl.requestSubmit();
+        }
+      });
+
+      // Botão Nova Conversa
+      newChatBtn.addEventListener('click', resetChat);
+
+      // Delegação de eventos para botões de ação e formulário parceiro
+      messagesEl.addEventListener('click', handleActionClick);
+    }
+
+    // ===== INPUT & UI =====
+    function enableInput() {
+      inputEl.disabled = false;
+      sendBtn.disabled = false;
+    }
+
+    function disableInput() {
+      inputEl.disabled = true;
+      sendBtn.disabled = true;
+    }
+
+    function autoResizeInput() {
+      inputEl.style.height = 'auto';
+      inputEl.style.height = Math.min(inputEl.scrollHeight, 120) + 'px';
+    }
+
+    // ===== TRANSIÇÃO ENTRE ESTADOS =====
+    function startChat() {
+      if (state.hasStartedChat) return;
+      state.hasStartedChat = true;
+      
+      // Animação: welcome fade out + slide up
+      welcomeScreen.classList.add('hidden');
+      
+      // Chat fade in + slide down
+      chatScreen.style.display = 'flex';
+      // Força reflow para animação funcionar
+      void chatScreen.offsetWidth;
+      chatScreen.classList.add('active');
+      
+      // Scroll para baixo após transição
+      setTimeout(scrollToBottom, 300);
+    }
+
+    function resetChat() {
+      // Limpa estado e UI
+      state.conversationHistory = [{ role: "system", content: SYSTEM_PROMPT }];
+      state.hasStartedChat = false;
+      state.isWaiting = false;
+      
+      // Limpa mensagens
+      messagesEl.innerHTML = '';
+      
+      // Restaura welcome screen
+      welcomeScreen.classList.remove('hidden');
+      chatScreen.classList.remove('active');
+      setTimeout(() => {
+        chatScreen.style.display = 'none';
+      }, 300);
+      
+      // Limpa input e habilita
+      inputEl.value = '';
+      autoResizeInput();
+      enableInput();
+      inputEl.focus();
+    }
+
+    // ===== MENSAGENS =====
+    function addUserMessage(text) {
+      appendMessage('user', escapeHtml(text));
+      state.conversationHistory.push({ role: "user", content: text });
+      scrollToBottom();
+    }
+
+    function addDonMessage(text, parseButtons = true) {
+      const content = parseButtons ? parseButtons(text) : escapeHtml(text).replace(/\n/g, '<br>');
+      appendMessage('don', content, true);
+      state.conversationHistory.push({ role: "assistant", content: text });
+      scrollToBottom();
+    }
+
+    function appendMessage(role, content, isHtml = false) {
+      const msgEl = document.createElement('div');
+      msgEl.className = `message ${role}`;
+      
+      const avatar = document.createElement('div');
+      avatar.className = 'message-avatar';
+      avatar.innerHTML = role === 'don' 
+        ? '<i data-lucide="snowflake" style="width:16px;height:16px;"></i>' 
+        : 'U';
+      
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      if (isHtml) {
+        bubble.innerHTML = content;
+      } else {
+        bubble.textContent = content;
+      }
+      
+      msgEl.appendChild(avatar);
+      msgEl.appendChild(bubble);
+      messagesEl.appendChild(msgEl);
+      
+      if (role === 'don') lucide.createIcons();
+    }
+
+    function showLoading() {
+      const msgEl = document.createElement('div');
+      msgEl.className = 'message don';
+      msgEl.id = 'loading-msg';
+      
+      const avatar = document.createElement('div');
+      avatar.className = 'message-avatar';
+      avatar.innerHTML = '<i data-lucide="snowflake" style="width:16px;height:16px;"></i>';
+      
+      const bubble = document.createElement('div');
+      bubble.className = 'loading';
+      bubble.innerHTML = '<div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div>';
+      
+      msgEl.appendChild(avatar);
+      msgEl.appendChild(bubble);
+      messagesEl.appendChild(msgEl);
+      lucide.createIcons();
+      scrollToBottom();
+    }
+
+    function hideLoading() {
+      const loading = document.getElementById('loading-msg');
+      if (loading) loading.remove();
+    }
+
+    function showError(message) {
+      const msgEl = document.createElement('div');
+      msgEl.className = 'message don';
+      
+      const avatar = document.createElement('div');
+      avatar.className = 'message-avatar';
+      avatar.innerHTML = '<i data-lucide="snowflake" style="width:16px;height:16px;"></i>';
+      
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble error';
+      bubble.textContent = message;
+      
+      msgEl.appendChild(avatar);
+      msgEl.appendChild(bubble);
+      messagesEl.appendChild(msgEl);
+      scrollToBottom();
+    }
+
+    function scrollToBottom() {
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    // ===== PARSER DE BOTÕES DE AÇÃO [BTN:texto|ação] =====
+    // Transforma marcadores [BTN:label|action] em botões HTML clicáveis
+    function parseButtons(text) {
+      const regex = /\[BTN:([^\]|]+)\|([^\]]+)\]/g;
+      let processed = escapeHtml(text).replace(regex, (match, label, action) => {
+        return `<!--btn:${action}--><button class="action-btn" data-action="${escapeHtml(action)}">${escapeHtml(label)}</button>`;
+      });
+      
+      // Se houve substituição, agrupa botões em container flex
+      if (processed.includes('<!--btn:')) {
+        const parts = processed.split(/(<!--btn:[^>]+>.*?<\/button>)/g);
+        let result = '';
+        let buttonGroup = '';
+        
+        parts.forEach(part => {
+          if (part.startsWith('<!--btn:')) {
+            buttonGroup += part;
+          } else {
+            if (buttonGroup) {
+              result += `<div class="action-buttons">${buttonGroup}</div>`;
+              buttonGroup = '';
+            }
+            result += part.replace(/\n/g, '<br>');
+          }
+        });
+        if (buttonGroup) {
+          result += `<div class="action-buttons">${buttonGroup}</div>`;
+        }
+        return result;
+      }
+      return processed.replace(/\n/g, '<br>');
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // ===== HANDLER DE CLIQUE EM BOTÕES DE AÇÃO =====
+    function handleActionClick(e) {
+      const btn = e.target.closest('.action-btn');
+      if (!btn) return;
+      
+      const action = btn.dataset.action;
+      handleAction(action);
+    }
+
+    function handleAction(action) {
+      switch(action) {
+        case 'whatsapp':
+          window.open("https://wa.me/5511911713808?text=Olá, vim pelo site Don Ar!", '_blank');
+          break;
+        case 'email':
+          window.open("mailto:contato@donar.chat");
+          break;
+        case 'agendar':
+          addDonMessage("📅 Abrindo agenda de agendamentos...", false);
+          break;
+        case 'tecnico':
+          window.open("https://wa.me/5511911713808?text=Preciso falar com um técnico urgente", '_blank');
+          break;
+        case 'parceiro':
+          showPartnerForm();
+          break;
+        case 'ligar':
+          window.open("tel:+5511911713808");
+          break;
+      }
+    }
+
+    // ===== FORMULÁRIO DE PARCEIRO INLINE =====
+    function showPartnerForm() {
+      const formHtml = `
+        <div class="partner-form">
+          <h4>Cadastro de Parceiro Instalador 🤝</h4>
+          <input type="text" id="partner-name" placeholder="Nome completo *" required />
+          <input type="text" id="partner-city" placeholder="Cidade de atuação *" required />
+          <input type="tel" id="partner-phone" placeholder="Telefone / WhatsApp *" required />
+          <input type="text" id="partner-crea" placeholder="CREA ou certificação (opcional)" />
+          <textarea id="partner-message" placeholder="Mensagem (opcional)"></textarea>
+          <button type="button" id="partner-submit">Enviar candidatura</button>
+        </div>
+      `;
+      
+      const msgEl = document.createElement('div');
+      msgEl.className = 'message don';
+      
+      const avatar = document.createElement('div');
+      avatar.className = 'message-avatar';
+      avatar.innerHTML = '<i data-lucide="snowflake" style="width:16px;height:16px;"></i>';
+      
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      bubble.innerHTML = '<p>Que bom que quer ser parceiro! 🤝 Preencha os dados abaixo:</p>' + formHtml;
+      
+      msgEl.appendChild(avatar);
+      msgEl.appendChild(bubble);
+      messagesEl.appendChild(msgEl);
+      lucide.createIcons();
+      scrollToBottom();
+      
+      // Listener do submit
+      document.getElementById('partner-submit')?.addEventListener('click', submitPartnerForm);
+    }
+
+    function submitPartnerForm() {
+      const name = document.getElementById('partner-name')?.value.trim();
+      const city = document.getElementById('partner-city')?.value.trim();
+      const phone = document.getElementById('partner-phone')?.value.trim();
+      
+      if (!name || !city || !phone) {
+        alert('Por favor, preencha os campos obrigatórios (*).');
+        return;
+      }
+      
+      // Remove form e mostra confirmação
+      const form = document.querySelector('.partner-form');
+      if (form) {
+        form.outerHTML = '<div class="form-confirmation">✅ Candidatura enviada com sucesso! Nossa equipe entrará em contato em breve.</div>';
+      }
+      
+      // Adiciona ao histórico (simulado para contexto)
+      state.conversationHistory.push({
+        role: "assistant",
+        content: `[Formulário parceiro] Nome: ${name}, Cidade: ${city}, Contato: ${phone}`
+      });
+    }
+
+    // ===== CONEXÃO COM SERVIDOR BACKEND =====
+    // Fetch para o proxy seguro que encaminha para DeepSeek
+    async function fetchDonResponse(userMessage) {
+      try {
+        const response = await fetch(`${SERVER_URL}/api/chat`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-client-secret": CLIENT_SECRET
+          },
+          body: JSON.stringify({ messages: state.conversationHistory })
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.error || `HTTP ${response.status}`);
+        }
+        
+        const data = await response.json();
+        return data.content;
+        
+      } catch (error) {
+        console.error('[Fetch Error]', error);
+        throw error;
+      }
+    }
+
+    // ===== FLUXO PRINCIPAL =====
+    async function handleUserMessage(text) {
+      if (state.isWaiting) return;
+      
+      // Transição para estado de chat na primeira mensagem
+      if (!state.hasStartedChat) {
+        startChat();
+      }
+      
+      addUserMessage(text);
+      disableInput();
+      state.isWaiting = true;
+      showLoading();
+      
+      try {
+        // ===== FETCH PARA API PROXY =====
+        const reply = await fetchDonResponse(text);
+        
+        hideLoading();
+        addDonMessage(reply);
+        
+      } catch (error) {
+        hideLoading();
+        // ===== TRATAMENTO DE ERRO DE REDE =====
+        showError("❌ Não consegui me conectar. Verifique sua conexão e tente novamente.");
+        // Mantém histórico sem a resposta falha
+        state.conversationHistory.pop(); // Remove último user message do histórico para retry
+      } finally {
+        state.isWaiting = false;
+        enableInput();
+        inputEl.focus();
+      }
+    }
+
+    // ===== INICIA =====
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
