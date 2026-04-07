@@ -4,622 +4,236 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Don QuixAr · Don Ar Climatizações</title>
-  
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
-
   <style>
-    :root {
-      --white: #FFFFFF;
-      --gray-50: #F9FAFB;
-      --gray-100: #F3F4F6;
-      --gray-300: #D1D5DB;
-      --gray-500: #6B7280;
-      --gray-900: #111827;
-      --blue-500: #3B82F6;
-      --blue-600: #2563EB;
-      --red-100: #FEE2E2;
-      --red-700: #B91C1C;
-      --font-family: 'Nunito', sans-serif;
-      --radius-card: 12px;
-      --radius-input: 24px;
-      --radius-bubble: 18px;
-      --shadow-soft: 0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.04);
-      --shadow-hover: 0 4px 12px rgba(0,0,0,0.12);
-      --transition: 150ms ease;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    html, body {
-      height: 100%;
-      font-family: var(--font-family);
-      background: var(--gray-50);
-      color: var(--gray-900);
-      -webkit-font-smoothing: antialiased;
-      /* REMOVIDO overflow:hidden — permitia scroll no mobile */
-    }
-
-    #app {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      max-width: 900px;
-      margin: 0 auto;
-      width: 100%;
-      position: relative;
-    }
-
-    /* ===== WELCOME SCREEN ===== */
-    #welcome-screen {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start; /* era center — agora começa do topo para permitir scroll */
-      padding: 40px 24px 140px;    /* padding-bottom generoso para não ficar atrás do input */
-      text-align: center;
-      transition: opacity 300ms ease, transform 300ms ease;
-      z-index: 20;
-      min-height: 100%;
-      overflow-y: auto;            /* scroll próprio da welcome screen */
-      -webkit-overflow-scrolling: touch;
-    }
-    #welcome-screen.hidden {
-      opacity: 0;
-      transform: translateY(-20px);
-      pointer-events: none;
-    }
-
-    .welcome-icon {
-      width: 48px;
-      height: 48px;
-      color: var(--blue-500);
-      margin-bottom: 24px;
-      animation: floatIcon 3s ease-in-out infinite;
-      flex-shrink: 0;
-    }
-    @keyframes floatIcon {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-6px); }
-    }
-
-    .welcome-title {
-      font-size: 2.2rem;
-      font-weight: 700;
-      color: var(--gray-900);
-      margin-bottom: 8px;
-      line-height: 1.2;
-    }
-
-    .welcome-subtitle {
-      font-size: 1.1rem;
-      font-weight: 400;
-      color: var(--gray-500);
-      margin-bottom: 32px;
-      max-width: 400px;
-    }
-
-    .suggestions-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 12px;
-      width: 100%;
-      max-width: 600px;
-      margin-bottom: 24px;
-    }
-    @media (min-width: 640px) {
-      .suggestions-grid { grid-template-columns: 1fr 1fr; }
-    }
-
-    .suggestion-card {
-      background: var(--white);
-      border: 1px solid var(--gray-300);
-      border-radius: var(--radius-card);
-      padding: 16px;
-      text-align: left;
-      cursor: pointer;
-      transition: all var(--transition);
-      animation: fadeInUp 300ms ease backwards;
-    }
-    .suggestion-card:hover {
-      border-color: var(--blue-500);
-      box-shadow: var(--shadow-hover);
-      transform: translateY(-2px);
-    }
-    .suggestion-card:active { transform: translateY(0); }
-    .suggestion-card:nth-child(1) { animation-delay: 100ms; }
-    .suggestion-card:nth-child(2) { animation-delay: 200ms; }
-    .suggestion-card:nth-child(3) { animation-delay: 300ms; }
-    .suggestion-card:nth-child(4) { animation-delay: 400ms; }
-    .suggestion-card:nth-child(5) { animation-delay: 500ms; }
-    .suggestion-card:nth-child(6) { animation-delay: 600ms; }
-
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(12px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    .suggestion-title {
-      font-weight: 700;
-      font-size: 0.95rem;
-      color: var(--gray-900);
-      margin-bottom: 4px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .suggestion-subtitle {
-      font-size: 0.8rem;
-      color: var(--gray-500);
-      line-height: 1.4;
-    }
-
-    /* ===== CHAT SCREEN ===== */
-    #chat-screen {
-      display: none;
-      flex-direction: column;
-      height: 100%;
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 300ms ease, transform 300ms ease;
-    }
-    #chat-screen.active {
-      display: flex;
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 20px;
-      background: var(--white);
-      border-bottom: 1px solid var(--gray-300);
-      flex-shrink: 0;
-      z-index: 10;
-      position: sticky;
-      top: 0;
-    }
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 700;
-      font-size: 1.1rem;
-      color: var(--gray-900);
-    }
-    .logo-icon { width: 24px; height: 24px; color: var(--blue-500); }
-    .agent-name { font-size: 0.85rem; color: var(--gray-500); margin-left: 4px; }
-    .new-chat-btn {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      background: transparent;
-      border: 1px solid var(--gray-300);
-      color: var(--gray-700);
-      padding: 8px 14px;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all var(--transition);
-    }
-    .new-chat-btn:hover { background: var(--gray-100); border-color: var(--gray-500); }
-    .new-chat-btn i { width: 16px; height: 16px; }
-
-    #messages {
-      flex: 1;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      scroll-behavior: smooth;
-      padding-bottom: 120px; /* espaço para o input fixo */
-    }
-
-    .message {
-      display: flex;
-      gap: 12px;
-      max-width: 85%;
-      animation: slideIn 200ms ease;
-    }
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .message.user {
-      align-self: flex-end;
-      flex-direction: row-reverse;
-    }
-
-    .message-avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      font-size: 0.85rem;
-    }
-    .message.don .message-avatar  { background: var(--blue-500); color: white; }
-    .message.user .message-avatar { background: var(--gray-300); color: var(--gray-700); }
-
-    .bubble {
-      padding: 14px 18px;
-      border-radius: var(--radius-bubble);
-      font-size: 0.95rem;
-      line-height: 1.5;
-      position: relative;
-      word-wrap: break-word;
-      overflow-wrap: break-word;
-    }
-    .message.don .bubble  { background: var(--gray-100); color: var(--gray-900); border-bottom-left-radius: 4px; }
-    .message.user .bubble { background: var(--blue-500); color: white; border-bottom-right-radius: 4px; }
-    .bubble p { margin: 0 0 8px 0; }
-    .bubble p:last-child { margin-bottom: 0; }
-    .bubble.error { background: var(--red-100); color: var(--red-700); border: 1px solid #FCA5A5; }
-
-    .action-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 12px;
-      padding-top: 8px;
-      border-top: 1px solid var(--gray-300);
-    }
-    .action-btn {
-      background: var(--white);
-      border: 1px solid var(--blue-500);
-      color: var(--blue-500);
-      padding: 8px 14px;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all var(--transition);
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      min-height: 44px;
-    }
-    .action-btn:hover  { background: var(--blue-500); color: white; }
-    .action-btn:active { transform: scale(0.98); }
-
-    .loading {
-      display: flex;
-      gap: 4px;
-      padding: 14px 18px;
-      background: var(--gray-100);
-      border-radius: var(--radius-bubble);
-      border-bottom-left-radius: 4px;
-      width: fit-content;
-    }
-    .loading-dot {
-      width: 8px; height: 8px;
-      background: var(--gray-500);
-      border-radius: 50%;
-      animation: bounce 1.4s infinite ease-in-out both;
-    }
-    .loading-dot:nth-child(1) { animation-delay: -0.32s; }
-    .loading-dot:nth-child(2) { animation-delay: -0.16s; }
-    @keyframes bounce {
-      0%, 80%, 100% { transform: scale(0); }
-      40%           { transform: scale(1); }
-    }
-
-    .partner-form {
-      background: var(--white);
-      border: 1px solid var(--gray-300);
-      border-radius: var(--radius-card);
-      padding: 20px;
-      margin-top: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      box-shadow: var(--shadow-soft);
-    }
-    .partner-form h4 { font-weight: 700; font-size: 1rem; margin-bottom: 4px; }
-    .partner-form input,
-    .partner-form textarea {
-      width: 100%;
-      padding: 10px 14px;
-      border: 1px solid var(--gray-300);
-      border-radius: 8px;
-      font-family: inherit;
-      font-size: 0.95rem;
-      outline: none;
-      transition: border-color var(--transition), box-shadow var(--transition);
-    }
-    .partner-form input:focus,
-    .partner-form textarea:focus {
-      border-color: var(--blue-500);
-      box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
-    }
-    .partner-form textarea { resize: vertical; min-height: 80px; }
-    .partner-form button {
-      background: var(--blue-500);
-      color: white;
-      border: none;
-      padding: 10px 18px;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      align-self: flex-start;
-      transition: background var(--transition);
-      min-height: 44px;
-    }
-    .partner-form button:hover { background: var(--blue-600); }
-    .form-confirmation {
-      background: #ECFDF5;
-      border: 1px solid #10B981;
-      color: #065F46;
-      padding: 12px 16px;
-      border-radius: 8px;
-      margin-top: 8px;
-      font-size: 0.9rem;
-    }
-
-    /* ===== INPUT BAR ===== */
-    #input-area {
-      position: fixed;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 100%;
-      max-width: 900px;
-      padding: 12px 20px 20px;
-      background: linear-gradient(to top, var(--gray-50) 80%, transparent);
-      display: flex;
-      align-items: flex-end;
-      gap: 12px;
-      z-index: 30;
-    }
-
-    .input-wrapper {
-      flex: 1;
-      display: flex;
-      align-items: flex-end;
-      gap: 8px;
-      background: var(--white);
-      border: 1px solid var(--gray-300);
-      border-radius: var(--radius-input);
-      padding: 8px 16px;
-      box-shadow: var(--shadow-soft);
-      transition: border-color var(--transition), box-shadow var(--transition);
-    }
-    .input-wrapper:focus-within {
-      border-color: var(--blue-500);
-      box-shadow: 0 0 0 3px rgba(59,130,246,0.1), var(--shadow-soft);
-    }
-
-    .input-attach {
-      color: var(--gray-500);
-      cursor: pointer;
-      padding: 8px;
-      border-radius: 50%;
-      transition: background var(--transition);
-      flex-shrink: 0;
-    }
-    .input-attach:hover { background: var(--gray-100); color: var(--gray-700); }
-    .input-attach i { width: 20px; height: 20px; }
-
-    #user-input {
-      flex: 1;
-      border: none;
-      background: transparent;
-      font-family: inherit;
-      font-size: 1rem;
-      outline: none;
-      resize: none;
-      max-height: 120px;
-      min-height: 24px;
-      padding: 10px 0;
-      color: var(--gray-900);
-    }
-    #user-input::placeholder { color: var(--gray-500); }
-
-    #send-btn {
-      width: 40px; height: 40px;
-      border-radius: 50%;
-      background: var(--gray-900);
-      color: white;
-      border: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: background var(--transition), transform 0.1s;
-      flex-shrink: 0;
-    }
-    #send-btn:hover   { background: #374151; }
-    #send-btn:active  { transform: scale(0.95); }
-    #send-btn:disabled { background: var(--gray-300); cursor: not-allowed; }
-    #send-btn i { width: 18px; height: 18px; }
-
-    .hidden { display: none !important; }
-    .sr-only {
-      position: absolute; width: 1px; height: 1px;
-      padding: 0; margin: -1px; overflow: hidden;
-      clip: rect(0,0,0,0); border: 0;
-    }
-
-    /* ===== MOBILE ===== */
-    @media (max-width: 640px) {
-      .welcome-title    { font-size: 1.8rem; }
-      .welcome-subtitle { font-size: 1rem; }
-      .suggestions-grid { gap: 10px; }
-      .suggestion-card  { padding: 14px; }
-      header            { padding: 12px 16px; }
-      .logo             { font-size: 1rem; }
-      .agent-name       { display: none; }
-      .new-chat-btn     { padding: 6px 12px; font-size: 0.8rem; }
-      #messages         { padding: 16px; padding-bottom: 130px; }
-      .message          { max-width: 92%; }
-      #input-area       { padding: 10px 16px env(safe-area-inset-bottom, 16px); }
-      .input-wrapper    { padding: 6px 12px; }
-      #send-btn         { width: 36px; height: 36px; }
-
-      /* Teclado virtual no iOS/Android: empurra o input para cima */
-      #input-area { bottom: env(safe-area-inset-bottom, 0); }
-    }
+    :root{--white:#FFFFFF;--gray-50:#F9FAFB;--gray-100:#F3F4F6;--gray-300:#D1D5DB;--gray-500:#6B7280;--gray-900:#111827;--blue-500:#3B82F6;--blue-600:#2563EB;--red-100:#FEE2E2;--red-700:#B91C1C;--font-family:'Nunito',sans-serif;--radius-card:12px;--radius-input:24px;--radius-bubble:18px;--shadow-soft:0 1px 3px rgba(0,0,0,0.08),0 4px 16px rgba(0,0,0,0.04);--shadow-hover:0 4px 12px rgba(0,0,0,0.12);--transition:150ms ease}
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;font-family:var(--font-family);background:var(--gray-50);color:var(--gray-900);-webkit-font-smoothing:antialiased}
+    #app{display:flex;flex-direction:column;height:100%;max-width:900px;margin:0 auto;width:100%;position:relative}
+    #welcome-screen{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:40px 24px 140px;text-align:center;transition:opacity 300ms ease,transform 300ms ease;z-index:20;min-height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;position:absolute;top:0;left:0;right:0;bottom:0;background:var(--gray-50)}
+    #welcome-screen.hidden{opacity:0;transform:translateY(-20px);pointer-events:none}
+    .welcome-icon{width:48px;height:48px;color:var(--blue-500);margin-bottom:24px;animation:floatIcon 3s ease-in-out infinite;flex-shrink:0}
+    @keyframes floatIcon{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+    .welcome-title{font-size:2.2rem;font-weight:700;color:var(--gray-900);margin-bottom:8px;line-height:1.2}
+    .welcome-subtitle{font-size:1.1rem;font-weight:400;color:var(--gray-500);margin-bottom:32px;max-width:400px}
+    .suggestions-grid{display:grid;grid-template-columns:1fr;gap:12px;width:100%;max-width:600px;margin-bottom:24px}
+    @media(min-width:640px){.suggestions-grid{grid-template-columns:1fr 1fr}}
+    .suggestion-card{background:var(--white);border:1px solid var(--gray-300);border-radius:var(--radius-card);padding:16px;text-align:left;cursor:pointer;transition:all var(--transition);animation:fadeInUp 300ms ease backwards}
+    .suggestion-card:hover{border-color:var(--blue-500);box-shadow:var(--shadow-hover);transform:translateY(-2px)}
+    .suggestion-card:active{transform:translateY(0)}
+    .suggestion-card:nth-child(1){animation-delay:100ms}.suggestion-card:nth-child(2){animation-delay:200ms}.suggestion-card:nth-child(3){animation-delay:300ms}.suggestion-card:nth-child(4){animation-delay:400ms}.suggestion-card:nth-child(5){animation-delay:500ms}.suggestion-card:nth-child(6){animation-delay:600ms}
+    @keyframes fadeInUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    .suggestion-title{font-weight:700;font-size:0.95rem;color:var(--gray-900);margin-bottom:4px;display:flex;align-items:center;gap:6px}
+    .suggestion-subtitle{font-size:0.8rem;color:var(--gray-500);line-height:1.4}
+    #chat-screen{display:none;flex-direction:column;height:100%;opacity:0;transform:translateY(20px);transition:opacity 300ms ease,transform 300ms ease}
+    #chat-screen.active{display:flex;opacity:1;transform:translateY(0)}
+    header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:var(--white);border-bottom:1px solid var(--gray-300);flex-shrink:0;z-index:10;position:sticky;top:0}
+    .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.1rem;color:var(--gray-900)}
+    .logo-icon{width:24px;height:24px;color:var(--blue-500)}
+    .agent-name{font-size:0.85rem;color:var(--gray-500);margin-left:4px}
+    .new-chat-btn{display:flex;align-items:center;gap:6px;background:transparent;border:1px solid var(--gray-300);color:var(--gray-700);padding:8px 14px;border-radius:20px;font-size:0.85rem;font-weight:600;cursor:pointer;transition:all var(--transition)}
+    .new-chat-btn:hover{background:var(--gray-100);border-color:var(--gray-500)}
+    .new-chat-btn i{width:16px;height:16px}
+    #messages{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px;display:flex;flex-direction:column;gap:16px;scroll-behavior:smooth;padding-bottom:120px}
+    .message{display:flex;gap:12px;max-width:85%;animation:slideIn 200ms ease}
+    @keyframes slideIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    .message.user{align-self:flex-end;flex-direction:row-reverse}
+    .message-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:0.85rem}
+    .message.don .message-avatar{background:var(--blue-500);color:white}
+    .message.user .message-avatar{background:var(--gray-300);color:var(--gray-700)}
+    .bubble{padding:14px 18px;border-radius:var(--radius-bubble);font-size:0.95rem;line-height:1.5;position:relative;word-wrap:break-word;overflow-wrap:break-word}
+    .message.don .bubble{background:var(--gray-100);color:var(--gray-900);border-bottom-left-radius:4px}
+    .message.user .bubble{background:var(--blue-500);color:white;border-bottom-right-radius:4px}
+    .bubble p{margin:0 0 8px 0}.bubble p:last-child{margin-bottom:0}
+    .bubble.error{background:var(--red-100);color:var(--red-700);border:1px solid #FCA5A5}
+    .action-buttons{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;padding-top:8px;border-top:1px solid var(--gray-300)}
+    .message.user .action-buttons{border-top-color:rgba(255,255,255,0.3)}
+    .action-btn{background:var(--white);border:1px solid var(--blue-500);color:var(--blue-500);padding:8px 14px;border-radius:8px;font-size:0.85rem;font-weight:600;cursor:pointer;transition:all var(--transition);display:inline-flex;align-items:center;gap:6px;min-height:44px}
+    .action-btn:hover{background:var(--blue-500);color:white}
+    .action-btn:active{transform:scale(0.98)}
+    .loading{display:flex;gap:4px;padding:14px 18px;background:var(--gray-100);border-radius:var(--radius-bubble);border-bottom-left-radius:4px;width:fit-content}
+    .loading-dot{width:8px;height:8px;background:var(--gray-500);border-radius:50%;animation:bounce 1.4s infinite ease-in-out both}
+    .loading-dot:nth-child(1){animation-delay:-0.32s}.loading-dot:nth-child(2){animation-delay:-0.16s}
+    @keyframes bounce{0%,80%,100%{transform:scale(0)}40%{transform:scale(1)}}
+    .partner-form{background:var(--white);border:1px solid var(--gray-300);border-radius:var(--radius-card);padding:20px;margin-top:12px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow-soft)}
+    .partner-form h4{font-weight:700;font-size:1rem;margin-bottom:4px}
+    .partner-form input,.partner-form textarea{width:100%;padding:10px 14px;border:1px solid var(--gray-300);border-radius:8px;font-family:inherit;font-size:0.95rem;outline:none;transition:border-color var(--transition),box-shadow var(--transition)}
+    .partner-form input:focus,.partner-form textarea:focus{border-color:var(--blue-500);box-shadow:0 0 0 3px rgba(59,130,246,0.1)}
+    .partner-form textarea{resize:vertical;min-height:80px}
+    .partner-form button{background:var(--blue-500);color:white;border:none;padding:10px 18px;border-radius:8px;font-weight:600;cursor:pointer;align-self:flex-start;transition:background var(--transition);min-height:44px}
+    .partner-form button:hover{background:var(--blue-600)}
+    .form-confirmation{background:#ECFDF5;border:1px solid #10B981;color:#065F46;padding:12px 16px;border-radius:8px;margin-top:8px;font-size:0.9rem}
+    .system-note{background:var(--gray-100);border-left:3px solid var(--blue-500);padding:10px 14px;border-radius:0 8px 8px 0;font-size:0.9rem;color:var(--gray-700);margin:8px 0}
+    #input-area{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:900px;padding:12px 20px 20px;background:linear-gradient(to top,var(--gray-50) 80%,transparent);display:flex;align-items:flex-end;gap:12px;z-index:30}
+    .input-wrapper{flex:1;display:flex;align-items:flex-end;gap:8px;background:var(--white);border:1px solid var(--gray-300);border-radius:var(--radius-input);padding:8px 16px;box-shadow:var(--shadow-soft);transition:border-color var(--transition),box-shadow var(--transition)}
+    .input-wrapper:focus-within{border-color:var(--blue-500);box-shadow:0 0 0 3px rgba(59,130,246,0.1),var(--shadow-soft)}
+    .input-attach{color:var(--gray-500);cursor:pointer;padding:8px;border-radius:50%;transition:background var(--transition);flex-shrink:0}
+    .input-attach:hover{background:var(--gray-100);color:var(--gray-700)}
+    .input-attach i{width:20px;height:20px}
+    #user-input{flex:1;border:none;background:transparent;font-family:inherit;font-size:1rem;outline:none;resize:none;max-height:120px;min-height:24px;padding:10px 0;color:var(--gray-900)}
+    #user-input::placeholder{color:var(--gray-500)}
+    #send-btn{width:40px;height:40px;border-radius:50%;background:var(--gray-900);color:white;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background var(--transition),transform 0.1s;flex-shrink:0}
+    #send-btn:hover{background:#374151}#send-btn:active{transform:scale(0.95)}#send-btn:disabled{background:var(--gray-300);cursor:not-allowed}
+    #send-btn i{width:18px;height:18px}
+    .hidden{display:none!important}
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+    @media(max-width:640px){.welcome-title{font-size:1.8rem}.welcome-subtitle{font-size:1rem}.suggestions-grid{gap:10px}.suggestion-card{padding:14px}header{padding:12px 16px}.logo{font-size:1rem}.agent-name{display:none}.new-chat-btn{padding:6px 12px;font-size:0.8rem}#messages{padding:16px;padding-bottom:130px}.message{max-width:92%}#input-area{padding:10px 16px env(safe-area-inset-bottom,16px)}.input-wrapper{padding:6px 12px}#send-btn{width:36px;height:36px}#input-area{bottom:env(safe-area-inset-bottom,0)}}
+    @media print{#input-area,#welcome-screen,.new-chat-btn{display:none!important}#chat-screen{position:static;height:auto}#messages{padding-bottom:20px;overflow:visible}}
   </style>
 </head>
 <body>
   <div id="app">
-
     <div id="welcome-screen">
       <i data-lucide="snowflake" class="welcome-icon"></i>
       <h1 class="welcome-title">Olá, bem-vindo à Don Ar.</h1>
       <p class="welcome-subtitle">Sou o Don QuixAr, como posso ajudar?</p>
       <div class="suggestions-grid">
-        <div class="suggestion-card" data-text="Preciso instalar um split 12.000 BTU em São Paulo, qual o valor?">
-          <div class="suggestion-title">💰 Quero um orçamento</div>
-          <div class="suggestion-subtitle">Ex: Preciso instalar um split 12.000 BTU em São Paulo, qual o valor?</div>
-        </div>
-        <div class="suggestion-card" data-text="Meu ar está gelando pouco, quero agendar uma visita técnica">
-          <div class="suggestion-title">🔧 Preciso de manutenção</div>
-          <div class="suggestion-subtitle">Ex: Meu ar está gelando pouco, quero agendar uma visita técnica</div>
-        </div>
-        <div class="suggestion-card" data-text="Tenho disponibilidade na quinta à tarde, conseguem atender?">
-          <div class="suggestion-title">📅 Agendar uma visita</div>
-          <div class="suggestion-subtitle">Ex: Tenho disponibilidade na quinta à tarde, conseguem atender?</div>
-        </div>
-        <div class="suggestion-card" data-text="Vocês atendem em Campinas ou somente São Paulo?">
-          <div class="suggestion-title">📍 Cidades atendidas</div>
-          <div class="suggestion-subtitle">Ex: Vocês atendem em Campinas ou somente São Paulo?</div>
-        </div>
-        <div class="suggestion-card" data-text="Sou técnico instalador e quero me cadastrar como parceiro Don Ar">
-          <div class="suggestion-title">🤝 Quero ser parceiro</div>
-          <div class="suggestion-subtitle">Ex: Sou técnico instalador e quero me cadastrar como parceiro Don Ar</div>
-        </div>
-        <div class="suggestion-card" data-text="Qual a diferença entre higienização e manutenção preventiva?">
-          <div class="suggestion-title">❓ Dúvidas sobre o serviço</div>
-          <div class="suggestion-subtitle">Ex: Qual a diferença entre higienização e manutenção preventiva?</div>
-        </div>
+        <div class="suggestion-card" data-text="Preciso instalar um split parede-parede, qual o valor?"><div class="suggestion-title">💰 Quero um orçamento</div><div class="suggestion-subtitle">Preciso instalar um split parede-parede, qual o valor</div></div>
+        <div class="suggestion-card" data-text="Meu ar está gelando pouco ou com defeito, quero agendar uma visita técnica"><div class="suggestion-title">🔧 Preciso de manutenção</div><div class="suggestion-subtitle">Ex: Meu ar está gelando pouco, quero agendar uma visita técnica</div></div>
+        <div class="suggestion-card" data-text="Tenho disponibilidade na quinta à tarde, conseguem atender?"><div class="suggestion-title">📅 Agendar uma visita</div><div class="suggestion-subtitle">Ex: Tenho disponibilidade na quinta à tarde, conseguem atender?</div></div>
+        <div class="suggestion-card" data-text="Vocês atendem em quais locais de São Paulo?"><div class="suggestion-title">📍 Cidades atendidas</div><div class="suggestion-subtitle">Ex: Vocês atendem em Campinas ou somente São Paulo?</div></div>
+        <div class="suggestion-card" data-text="Sou técnico instalador e quero me cadastrar como parceiro Don Ar"><div class="suggestion-title">🤝 Quero ser parceiro</div><div class="suggestion-subtitle">Ex: Sou técnico instalador e quero me cadastrar como parceiro Don Ar</div></div>
+        <div class="suggestion-card" data-text="Qual a diferença entre higienização e manutenção preventiva?"><div class="suggestion-title">❓ Dúvidas sobre o serviço</div><div class="suggestion-subtitle">Ex: Qual a diferença entre higienização e manutenção preventiva?</div></div>
       </div>
     </div>
-
     <div id="chat-screen">
       <header>
-        <div class="logo">
-          <i data-lucide="snowflake" class="logo-icon"></i>
-          Don Ar
-          <span class="agent-name">· Don QuixAr · Atendente Virtual</span>
-        </div>
-        <button class="new-chat-btn" id="new-chat-btn" title="Nova conversa">
-          <i data-lucide="plus"></i>
-          <span class="sr-only">Nova conversa</span>
-        </button>
+        <div class="logo"><i data-lucide="snowflake" class="logo-icon"></i> Don Ar <span class="agent-name">· Don QuixAr · Atendente Virtual</span></div>
+        <button class="new-chat-btn" id="new-chat-btn" title="Nova conversa"><i data-lucide="plus"></i><span class="sr-only">Nova conversa</span></button>
       </header>
       <div id="messages" role="log" aria-live="polite"></div>
     </div>
-
     <form id="input-area">
       <div class="input-wrapper">
-        <span class="input-attach" title="Anexar (em breve)">
-          <i data-lucide="plus"></i>
-        </span>
-        <textarea
-          id="user-input"
-          placeholder="Escreva sua mensagem..."
-          rows="1"
-          aria-label="Digite sua mensagem"
-        ></textarea>
-        <button type="submit" id="send-btn" aria-label="Enviar mensagem" disabled>
-          <i data-lucide="arrow-up"></i>
-        </button>
+        <span class="input-attach" title="Anexar (em breve)"><i data-lucide="plus"></i></span>
+        <textarea id="user-input" placeholder="Escreva sua mensagem..." rows="1" aria-label="Digite sua mensagem"></textarea>
+        <button type="submit" id="send-btn" aria-label="Enviar mensagem" disabled><i data-lucide="arrow-up"></i></button>
       </div>
     </form>
   </div>
 
   <script>
+    // ===== CONFIGURAÇÃO =====
     const SERVER_URL = "https://arthurmorato.com";
     const CLIENT_SECRET = "32fe82df316c9de20c2db95604ec22a455280f7decbe36b330e5503ebd1ae5fd";
+    const WHATSAPP_NUMBER = "5511911713808"; // Número principal para leads
 
-    const SYSTEM_PROMPT = `
-Você é Don QuixAr, atendente virtual 24 horas da Don Ar Climatizações. Seu papel é recepcionar, identificar, informar e converter visitantes em clientes ou parceiros instaladores.
+    // ===== SYSTEM PROMPT — REGRAS DE BOTÃO REFORÇADAS =====
+    const SYSTEM_PROMPT = `Você é Don QuixAr, atendente virtual 24/7 da Don Ar Climatizações.
 
-EMPRESA:
-Don Ar Climatizações. Especialidade: instalação de ar-condicionado conforme garantia do fabricante, manutenção preventiva e corretiva. Endereço: Av. Antônio Carlos Costa, 513 - Bela Vista, Osasco - SP, CEP 06053-010. Região de atendimento: São Paulo e região, Grande SP, ABC e Osasco, em expansão. WhatsApp e telefone: (11) 97665-3159. E-mail: contato@donar.chat. Horário de atendimento humano: segunda a sexta das 8h às 17h. Você atende 24h mas deixa claro que o contato com humano ocorre no horário comercial.
+🎯 PAPEL PRINCIPAL:
+- Recepcionar, identificar, informar e QUALIFICAR leads antes de converter.
+- Máx 3 frases por resposta. Emojis com moderação (máx 1).
+- NUNCA invente informações — use exclusivamente os dados injetados pelo backend.
 
-IDENTIFICAÇÃO DO VISITANTE:
-Logo na primeira mensagem identifique se o visitante é um cliente final (pessoa que quer instalar, consertar ou fazer manutenção no ar-condicionado) ou um parceiro instalador (técnico ou empresa que quer executar serviços pela rede Don Ar). Se não ficou claro, pergunte diretamente: "Você está buscando um serviço para o seu ar-condicionado, ou é um técnico interessado em trabalhar com a gente?"
+🔍 IDENTIFICAÇÃO (PRIMEIRO PASSO):
+- Assuma que é CLIENTE FINAL, a menos que ele se identifique como parceiro.
+- Se ambíguo, pergunte: "Você busca um serviço para seu ar-condicionado ou é técnico interessado em parceria?"
 
-PARA CLIENTE FINAL:
-Colete as informações necessárias para o atendente humano dar sequência: tipo de serviço desejado (instalação, manutenção, higienização ou conserto), cidade e bairro, BTUs do aparelho se souber, e melhor horário para contato. Nunca informe valores fixos. Diga que os preços dependem da visita técnica e do escopo do serviço, e que um atendente passará o orçamento. Sempre finalize com os botões: [BTN:📲 Falar com atendente|whatsapp] e [BTN:📞 Ligar agora|ligar].
+💼 FLUXO PARA CLIENTE FINAL (QUALIFICAÇÃO GRADUAL):
+1. Identifique o serviço: instalação, manutenção, higienização ou conserto.
+2. Colete cidade/bairro de atendimento.
+3. Se for instalação: pergunte BTUs do aparelho (se o cliente souber).
+4. Pergunte melhor horário para contato/visita.
+5. SOMENTE APÓS coletar pelo menos 3 desses 4 dados, considere exibir botão de conversão.
 
-PARA PARCEIRO INSTALADOR:
-Explique que a Don Ar capta, padroniza e garante os serviços, enquanto o parceiro executa os atendimentos na sua região e recebe o repasse da maior parte do valor. O parceiro precisa seguir os padrões técnicos da Don Ar com instalação conforme garantia do fabricante. Colete nome completo, cidade de atuação, telefone e experiência. Finalize com: [BTN:🤝 Quero me cadastrar|parceiro] e [BTN:📲 Falar com a equipe|whatsapp].
+🤝 FLUXO PARA PARCEIRO INSTALADOR:
+1. Explique o modelo: Don Ar capta/padroniza/garante; parceiro executa/recebe repasse.
+2. Colete: nome completo, cidade de atuação, telefone/WhatsApp, experiência.
+3. SOMENTE após coletar nome + cidade + contato, considere exibir botão de conversão.
 
-REGRAS:
-Seja humano, direto e cordial. Máximo 3 parágrafos por resposta. Nunca invente preços, prazos ou disponibilidade. Fora do horário comercial informe que o atendimento humano retoma no próximo dia útil e ofereça WhatsApp para deixar mensagem. Use emojis com moderação. Toda resposta deve terminar com pelo menos um botão de ação no formato [BTN:texto|ação].
+💰 REGRAS DE PREÇO (CRÍTICO):
+- NUNCA afirme valor final. Explique que o preço é composto por etapas.
+- Instalação Split: mão de obra base + adicional BTU + materiais (suporte, tubulação, dreno) + gás se necessário.
+- Diagnóstico de corretiva (R$80) é cobrado MESMO SEM REPARO.
+- Desinstalação/Reinstalação: SEMPRE "sob consulta" (sem tabela cadastrada).
 
-BOTÕES DISPONÍVEIS:
-Para orçamento: [BTN:📲 Falar com atendente|whatsapp] [BTN:📞 Ligar agora|ligar]
-Para agendamento: [BTN:📅 Agendar visita|agendar] [BTN:📲 Confirmar pelo WhatsApp|whatsapp]
-Para problema técnico urgente: [BTN:🔧 Falar com técnico|tecnico] [BTN:📞 Ligar agora|ligar]
-Para parceiro: [BTN:🤝 Quero me cadastrar|parceiro] [BTN:📲 Falar com a equipe|whatsapp]
-Para dúvida geral: [BTN:📲 Falar com atendente|whatsapp] [BTN:✉️ Enviar e-mail|email]
-Fora do horário: [BTN:📲 Deixar mensagem no WhatsApp|whatsapp] [BTN:✉️ Enviar e-mail|email]
-`;
+⏰ HORÁRIO DE ATENDIMENTO:
+- Atendimento humano: segunda a sexta, 8h às 17h.
+- Você atende 24h, mas informe que respostas humanas ocorrem no horário comercial.
+- Fora do horário: oriente WhatsApp para deixar mensagem.
 
-    const state = {
-      conversationHistory: [{ role: "system", content: SYSTEM_PROMPT }],
-      hasStartedChat: false,
-      isWaiting: false
+🔘 BOTÕES [BTN:texto|ação] — REGRAS ESTRITAS:
+✅ MOSTRE BOTÕES APENAS SE:
+  a) O cliente pediu EXPLICITAMENTE para "falar com atendente", "falar com humano", "passar para alguém"; OU
+  b) Você já coletou informações suficientes (mínimo 3 de 4: serviço, cidade, BTUs, horário) E o cliente demonstrou intenção clara de avançar (ex: "quero agendar", "fechar orçamento", "contratar").
+
+❌ NÃO MOSTRE BOTÕES SE:
+  - Ainda está coletando informações básicas.
+  - O cliente fez pergunta genérica ou de triagem.
+  - A conversa ainda está no início.
+
+Formato exato do botão: [BTN:📲 Falar com atendente|whatsapp]
+Ações disponíveis: whatsapp, email, agendar, tecnico, parceiro, ligar
+
+🚫 RESTRIÇÕES ABSOLUTAS:
+- Máx 3 frases por resposta.
+- Nunca invente preços, prazos, datas ou disponibilidade.
+- Nunca repita informações já ditas na mesma conversa.
+- Se não tiver certeza ou o dado não estiver no contexto: "Vou verificar com nossa equipe e te retorno."
+- Use linguagem simples, evite jargões técnicos desnecessários.
+
+[CONTEXTO COMPLETO DO BANCO SERÁ INJETADO PELO BACKEND ABAIXO]`;
+
+    // ===== ESTADO =====
+    const state = { 
+      conversationHistory: [{ role: "system", content: SYSTEM_PROMPT }], 
+      hasStartedChat: false, 
+      isWaiting: false,
+      conversationId: null // Para rastrear sessão no backend
     };
 
+    // ===== DOM =====
     const welcomeScreen = document.getElementById('welcome-screen');
-    const chatScreen    = document.getElementById('chat-screen');
-    const messagesEl    = document.getElementById('messages');
-    const inputEl       = document.getElementById('user-input');
-    const formEl        = document.getElementById('input-area');
-    const sendBtn       = document.getElementById('send-btn');
-    const newChatBtn    = document.getElementById('new-chat-btn');
+    const chatScreen = document.getElementById('chat-screen');
+    const messagesEl = document.getElementById('messages');
+    const inputEl = document.getElementById('user-input');
+    const formEl = document.getElementById('input-area');
+    const sendBtn = document.getElementById('send-btn');
+    const newChatBtn = document.getElementById('new-chat-btn');
 
-    function init() {
-      lucide.createIcons();
-      setupEventListeners();
-      enableInput();
-      setTimeout(() => inputEl.focus(), 300);
+    // ===== INIT =====
+    function init() { 
+      lucide.createIcons(); 
+      setupEventListeners(); 
+      enableInput(); 
+      setTimeout(() => inputEl.focus(), 300); 
+      // Gera ID único para esta sessão de conversa
+      state.conversationId = 'sess_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
     }
 
     function setupEventListeners() {
-      document.querySelectorAll('.suggestion-card').forEach(card => {
-        card.addEventListener('click', () => handleUserMessage(card.dataset.text));
-      });
-      formEl.addEventListener('submit', e => {
-        e.preventDefault();
-        const text = inputEl.value.trim();
-        if (text && !state.isWaiting) {
-          handleUserMessage(text);
-          inputEl.value = '';
-          autoResizeInput();
-        }
+      document.querySelectorAll('.suggestion-card').forEach(card => 
+        card.addEventListener('click', () => handleUserMessage(card.dataset.text))
+      );
+      formEl.addEventListener('submit', e => { 
+        e.preventDefault(); 
+        const text = inputEl.value.trim(); 
+        if (text && !state.isWaiting) { 
+          handleUserMessage(text); 
+          inputEl.value = ''; 
+          autoResizeInput(); 
+        } 
       });
       inputEl.addEventListener('input', autoResizeInput);
-      inputEl.addEventListener('keydown', e => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-          e.preventDefault();
-          formEl.requestSubmit();
-        }
+      inputEl.addEventListener('keydown', e => { 
+        if (e.key === 'Enter' && !e.shiftKey) { 
+          e.preventDefault(); 
+          formEl.requestSubmit(); 
+        } 
       });
       newChatBtn.addEventListener('click', resetChat);
       messagesEl.addEventListener('click', handleActionClick);
     }
 
-    function enableInput()  { inputEl.disabled = false; sendBtn.disabled = false; }
-    function disableInput() { inputEl.disabled = true;  sendBtn.disabled = true;  }
-
-    function autoResizeInput() {
-      inputEl.style.height = 'auto';
-      inputEl.style.height = Math.min(inputEl.scrollHeight, 120) + 'px';
+    function enableInput() { inputEl.disabled = false; sendBtn.disabled = false; }
+    function disableInput() { inputEl.disabled = true; sendBtn.disabled = true; }
+    function autoResizeInput() { 
+      inputEl.style.height = 'auto'; 
+      inputEl.style.height = Math.min(inputEl.scrollHeight, 120) + 'px'; 
     }
 
     function startChat() {
@@ -634,211 +248,390 @@ Fora do horário: [BTN:📲 Deixar mensagem no WhatsApp|whatsapp] [BTN:✉️ En
 
     function resetChat() {
       state.conversationHistory = [{ role: "system", content: SYSTEM_PROMPT }];
-      state.hasStartedChat = false;
-      state.isWaiting = false;
+      state.hasStartedChat = false; 
+      state.isWaiting = false; 
+      state.conversationId = 'sess_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
       messagesEl.innerHTML = '';
-      welcomeScreen.classList.remove('hidden');
+      welcomeScreen.classList.remove('hidden'); 
       chatScreen.classList.remove('active');
       setTimeout(() => { chatScreen.style.display = 'none'; }, 300);
-      inputEl.value = '';
-      autoResizeInput();
-      enableInput();
+      inputEl.value = ''; 
+      autoResizeInput(); 
+      enableInput(); 
       inputEl.focus();
     }
 
-    function escapeHtml(text) {
-      const div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
+    function escapeHtml(text) { 
+      const div = document.createElement('div'); 
+      div.textContent = text; 
+      return div.innerHTML; 
     }
 
+    // ===== PARSER DE BOTÕES [BTN] — VERSÃO ROBUSTA (2-pass) =====
     function parseButtons(text) {
+      let escaped = escapeHtml(text);
+      const buttons = [];
       const regex = /\[BTN:([^\]|]+)\|([^\]]+)\]/g;
-      let processed = escapeHtml(text).replace(regex, (_match, label, action) => {
-        return `<!--btn--><button class="action-btn" data-action="${escapeHtml(action)}">${escapeHtml(label)}</button>`;
+      let withMarkers = escaped.replace(regex, (match, label, action) => {
+        const id = `__BTN_${buttons.length}__`;
+        buttons.push({ id, label: label.trim(), action: action.trim().toLowerCase() });
+        return id;
       });
-      if (processed.includes('<!--btn-->')) {
-        const parts = processed.split(/(<!--btn--><button[\s\S]*?<\/button>)/g);
-        let result = '', buttonGroup = '';
-        parts.forEach(part => {
-          if (part.startsWith('<!--btn-->')) {
-            buttonGroup += part.replace('<!--btn-->', '');
-          } else {
-            if (buttonGroup) { result += `<div class="action-buttons">${buttonGroup}</div>`; buttonGroup = ''; }
-            result += part.replace(/\n/g, '<br>');
-          }
-        });
-        if (buttonGroup) result += `<div class="action-buttons">${buttonGroup}</div>`;
-        return result;
-      }
-      return processed.replace(/\n/g, '<br>');
+      withMarkers = withMarkers.replace(/\n/g, '<br>');
+      if (buttons.length === 0) return withMarkers;
+      buttons.forEach(btn => {
+        const btnHtml = `<button class="action-btn" data-action="${escapeHtml(btn.action)}">${escapeHtml(btn.label)}</button>`;
+        withMarkers = withMarkers.replace(btn.id, btnHtml);
+      });
+      withMarkers = withMarkers.replace(/(<button class="action-btn"[^>]*>.*?<\/button>(\s*<button class="action-btn"[^>]*>.*?<\/button>)+)/g, '<div class="action-buttons">$1</div>');
+      return withMarkers;
     }
 
     function appendMessage(role, content, isHtml = false) {
-      const msgEl = document.createElement('div');
+      const msgEl = document.createElement('div'); 
       msgEl.className = `message ${role}`;
-      const avatar = document.createElement('div');
+      const avatar = document.createElement('div'); 
       avatar.className = 'message-avatar';
-      avatar.innerHTML = role === 'don'
-        ? '<i data-lucide="snowflake" style="width:16px;height:16px;"></i>'
+      avatar.innerHTML = role === 'don' 
+        ? '<i data-lucide="snowflake" style="width:16px;height:16px;"></i>' 
         : 'U';
-      const bubble = document.createElement('div');
+      const bubble = document.createElement('div'); 
       bubble.className = 'bubble';
-      if (isHtml) { bubble.innerHTML = content; }
-      else        { bubble.textContent = content; }
-      msgEl.appendChild(avatar);
-      msgEl.appendChild(bubble);
+      if (isHtml) { bubble.innerHTML = content; } 
+      else { bubble.textContent = content; }
+      msgEl.appendChild(avatar); 
+      msgEl.appendChild(bubble); 
       messagesEl.appendChild(msgEl);
       if (role === 'don') lucide.createIcons();
     }
 
-    function addUserMessage(text) {
-      appendMessage('user', escapeHtml(text));
-      state.conversationHistory.push({ role: "user", content: text });
-      scrollToBottom();
+    function addUserMessage(text) { 
+      appendMessage('user', escapeHtml(text)); 
+      state.conversationHistory.push({ role: "user", content: text, timestamp: new Date().toISOString() }); 
+      scrollToBottom(); 
+      // Salva conversa no backend após cada mensagem do usuário
+      saveConversationToBackend();
     }
-
+    
     function addDonMessage(text, shouldParse = true) {
-      const content = shouldParse
-        ? parseButtons(text)
-        : escapeHtml(text).replace(/\n/g, '<br>');
-      appendMessage('don', content, true);
-      state.conversationHistory.push({ role: "assistant", content: text });
+      const content = shouldParse ? parseButtons(text) : escapeHtml(text).replace(/\n/g, '<br>');
+      appendMessage('don', content, true); 
+      state.conversationHistory.push({ role: "assistant", content: text, timestamp: new Date().toISOString() }); 
       scrollToBottom();
+      // Salva conversa no backend após cada resposta do Don
+      saveConversationToBackend();
     }
 
     function showLoading() {
-      const msgEl = document.createElement('div');
-      msgEl.className = 'message don';
+      const msgEl = document.createElement('div'); 
+      msgEl.className = 'message don'; 
       msgEl.id = 'loading-msg';
-      const avatar = document.createElement('div');
-      avatar.className = 'message-avatar';
+      const avatar = document.createElement('div'); 
+      avatar.className = 'message-avatar'; 
       avatar.innerHTML = '<i data-lucide="snowflake" style="width:16px;height:16px;"></i>';
-      const bubble = document.createElement('div');
-      bubble.className = 'loading';
+      const bubble = document.createElement('div'); 
+      bubble.className = 'loading'; 
       bubble.innerHTML = '<div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div>';
-      msgEl.appendChild(avatar);
-      msgEl.appendChild(bubble);
-      messagesEl.appendChild(msgEl);
-      lucide.createIcons();
+      msgEl.appendChild(avatar); 
+      msgEl.appendChild(bubble); 
+      messagesEl.appendChild(msgEl); 
+      lucide.createIcons(); 
       scrollToBottom();
     }
-
-    function hideLoading() {
-      const el = document.getElementById('loading-msg');
-      if (el) el.remove();
+    
+    function hideLoading() { 
+      const el = document.getElementById('loading-msg'); 
+      if (el) el.remove(); 
     }
-
+    
     function showError(message) {
-      const msgEl = document.createElement('div');
+      const msgEl = document.createElement('div'); 
       msgEl.className = 'message don';
-      const avatar = document.createElement('div');
-      avatar.className = 'message-avatar';
+      const avatar = document.createElement('div'); 
+      avatar.className = 'message-avatar'; 
       avatar.innerHTML = '<i data-lucide="snowflake" style="width:16px;height:16px;"></i>';
-      const bubble = document.createElement('div');
-      bubble.className = 'bubble error';
+      const bubble = document.createElement('div'); 
+      bubble.className = 'bubble error'; 
       bubble.textContent = message;
-      msgEl.appendChild(avatar);
-      msgEl.appendChild(bubble);
-      messagesEl.appendChild(msgEl);
+      msgEl.appendChild(avatar); 
+      msgEl.appendChild(bubble); 
+      messagesEl.appendChild(msgEl); 
       scrollToBottom();
     }
-
-    function scrollToBottom() {
-      messagesEl.scrollTop = messagesEl.scrollHeight;
+    
+    function scrollToBottom() { 
+      messagesEl.scrollTop = messagesEl.scrollHeight; 
     }
 
-    function handleActionClick(e) {
-      const btn = e.target.closest('.action-btn');
-      if (!btn) return;
-      handleAction(btn.dataset.action);
-    }
-
-    function handleAction(action) {
-      switch (action) {
-        case 'whatsapp': window.open("https://wa.me/5511911713808?text=Olá, vim pelo site Don Ar!", '_blank'); break;
-        case 'email':    window.open("mailto:contato@donar.chat"); break;
-        case 'agendar':  addDonMessage("📅 Abrindo agenda de agendamentos...", false); break;
-        case 'tecnico':  window.open("https://wa.me/5511911713808?text=Preciso falar com um técnico urgente", '_blank'); break;
-        case 'parceiro': showPartnerForm(); break;
-        case 'ligar':    window.open("tel:+5511911713808"); break;
+    // ===== SALVAR CONVERSA NO BACKEND =====
+    async function saveConversationToBackend() {
+      // Extrai telefone do histórico para identificar usuário único
+      const allText = state.conversationHistory.map(m => m.content).join(' ');
+      const phoneMatch = allText.match(/(\(?\d{2}\)?\s?)?9?\d{4}-?\d{4}/);
+      const telefone = phoneMatch ? phoneMatch[0].replace(/\D/g, '') : null;
+      
+      // Só salva se tiver telefone OU se já tiver mensagens suficientes
+      if (!telefone && state.conversationHistory.length < 4) return;
+      
+      // Prepara payload
+      const payload = {
+        telefone: telefone || 'anon_' + state.conversationId,
+        canal: 'web',
+        historico: state.conversationHistory.map(m => ({
+          role: m.role,
+          content: m.content,
+          timestamp: m.timestamp || new Date().toISOString()
+        })),
+        status: 'aberta'
+      };
+      
+      // Envia para backend (fire-and-forget, não bloqueia UI)
+      try {
+        await fetch(`${SERVER_URL}/api/db/conversa`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-client-secret': CLIENT_SECRET
+          },
+          body: JSON.stringify(payload)
+        });
+      } catch (e) {
+        // Falha silenciosa — não interrompe a experiência do usuário
+        console.warn('[Save Conversation]', e.message);
       }
     }
 
+    // ===== DETECTAR LEAD QUALIFICADO E SALVAR =====
+    function isLeadQualified() {
+      const userMsgs = state.conversationHistory.filter(m => m.role === 'user').map(m => m.content.toLowerCase());
+      const allText = userMsgs.join(' ');
+      
+      // Critérios de qualificação para CLIENTE FINAL:
+      // - Mencionou serviço (instalação, manutenção, etc)
+      // - Mencionou cidade/local
+      // - Demonstrou intenção de avançar (orçamento, agendar, contratar, fechar)
+      const hasService = ['instalação', 'manutenção', 'higienização', 'conserto', 'orçamento', 'visita'].some(k => allText.includes(k));
+      const hasLocation = ['são paulo', 'osasco', 'campinas', 'abc', 'grande sp', 'bairro', 'cidade', 'local', 'endereco'].some(k => allText.includes(k));
+      const hasIntent = ['quero', 'preciso', 'gostaria', 'agendar', 'contratar', 'fechar', 'orçamento', 'valor', 'preço'].some(k => allText.includes(k));
+      
+      // Critérios para PARCEIRO:
+      const isPartner = /parceiro|instalador|técnico|cadastro|credenci/i.test(allText);
+      const hasPartnerInfo = isPartner && userMsgs.some(m => /\b[a-zà-ú]+\s+[a-zà-ú]+\b/i.test(m)) && /[\(]?\d{2}[\)]?\s?9?\d{4}-?\d{4}/.test(allText);
+      
+      return (hasService && hasLocation && hasIntent) || hasPartnerInfo;
+    }
+
+    async function saveLeadToBackend(action) {
+      const allText = state.conversationHistory.map(m => m.content).join(' ');
+      const phoneMatch = allText.match(/(\(?\d{2}\)?\s?)?9?\d{4}-?\d{4}/);
+      const telefone = phoneMatch ? phoneMatch[0].replace(/\D/g, '') : null;
+      
+      // Extrai dados com regex simples
+      const nomeMatch = allText.match(/\b([A-Z][a-zÀ-ú]+\s+[A-Z][a-zÀ-ú]+)\b/);
+      const cidadeMatch = allText.match(/(?:em|de|atendo|morando|local)\s+([A-Z][a-zÀ-ú\s]+?)(?:\s*[-,.]|$)/i);
+      const btuMatch = allText.match(/(\d{2,5})\s*BTU/i);
+      
+      const payload = {
+        telefone: telefone || '',
+        nome: nomeMatch ? nomeMatch[1].trim() : '',
+        cidade: cidadeMatch ? cidadeMatch[1].trim() : '',
+        tipo: /parceiro|instalador|técnico/i.test(allText) ? 'parceiro_instalador' : 'cliente_final',
+        servico_interesse: '',
+        btus: btuMatch ? parseInt(btuMatch[1]) : null,
+        melhor_horario: '',
+        observacao: `Lead qualificado via botão [${action}]. Sessão: ${state.conversationId}`
+      };
+      
+      // Detecta serviço de interesse
+      const services = ['instalação', 'manutenção', 'higienização', 'conserto', 'desinstalação'];
+      for (const svc of services) {
+        if (allText.includes(svc)) { payload.servico_interesse = svc; break; }
+      }
+      
+      // Extrai horário se mencionado
+      const timeMatch = allText.match(/(?:manhã|tarde|noite|\d{1,2}h|segunda|terça|quarta|quinta|sexta)/i);
+      if (timeMatch) payload.melhor_horario = timeMatch[0];
+      
+      try {
+        const response = await fetch(`${SERVER_URL}/api/db/lead`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-client-secret': CLIENT_SECRET
+          },
+          body: JSON.stringify(payload)
+        });
+        
+        if (response.ok) {
+          console.log('[Lead Saved]', payload);
+        }
+      } catch (e) {
+        console.warn('[Save Lead Error]', e.message);
+      }
+    }
+
+    // ===== GERAR RESUMO PARA WHATSAPP =====
+    function generateConversationSummary() {
+      const userMessages = state.conversationHistory.filter(m => m.role === 'user').map(m => m.content);
+      
+      let nome = '', cidade = '', servico = '', btus = '', horario = '', tipo = 'Cliente final', contato = '';
+      
+      // Detecta tipo
+      if (userMessages.some(m => /parceiro|instalador|técnico|cadastro/i.test(m))) tipo = 'Parceiro instalador';
+      
+      // Extrai cidade
+      const cityMatch = userMessages.join(' ').match(/(?:em|de|atendo em|morando em)\s+([A-Z][a-zÀ-ú\s]+?)(?:\s*[-,]|$)/);
+      if (cityMatch) cidade = cityMatch[1].trim();
+      
+      // Extrai BTUs
+      const btuMatch = userMessages.join(' ').match(/(\d{2,5})\s*BTU/i);
+      if (btuMatch) btus = btuMatch[1] + ' BTU';
+      
+      // Extrai serviço
+      const serviceKeywords = ['instalação', 'manutenção', 'higienização', 'conserto', 'desinstalação', 'orçamento', 'visita', 'agendar'];
+      for (const kw of serviceKeywords) {
+        if (userMessages.some(m => m.toLowerCase().includes(kw))) { servico = kw; break; }
+      }
+      
+      // Extrai horário
+      const timeMatch = userMessages.join(' ').match(/(?:horário|disponibilidade|prefiro|melhor).{0,30}?(manhã|tarde|noite|\d{1,2}h|segunda|terça|quarta|quinta|sexta)/i);
+      if (timeMatch) horario = timeMatch[1].trim();
+      
+      // Extrai nome
+      const nameCandidate = userMessages.find(m => /^[A-Z][a-zÀ-ú]+\s+[A-Z][a-zÀ-ú]+$/.test(m.trim()));
+      if (nameCandidate) nome = nameCandidate.trim();
+      
+      // Extrai contato
+      const phoneMatch = userMessages.join(' ').match(/(\(?\d{2}\)?\s?)?9?\d{4}-?\d{4}/);
+      if (phoneMatch) contato = phoneMatch[0].replace(/\s/g, '');
+      
+      // Monta resumo
+      let summary = `*NOVO CONTATO — DON AR*%0A%0A`;
+      summary += `👤 Tipo: ${tipo}%0A`;
+      if (nome) summary += `📛 Nome: ${nome}%0A`;
+      if (cidade) summary += `📍 Cidade: ${cidade}%0A`;
+      if (servico) summary += `🔧 Interesse: ${servico}%0A`;
+      if (btus) summary += `❄️ BTUs: ${btus}%0A`;
+      if (horario) summary += `⏰ Horário: ${horario}%0A`;
+      if (contato) summary += `📱 Contato: ${contato}%0A`;
+      summary += `%0A*Últimas mensagens:*%0A`;
+      userMessages.slice(-3).forEach(msg => {
+        const short = msg.length > 100 ? msg.substring(0, 97) + '...' : msg;
+        summary += `• ${short}%0A`;
+      });
+      summary += `%0A_Triagem realizada por Don QuixAr (IA) — Sessão: ${state.conversationId}_`;
+      
+      return summary;
+    }
+
+    // ===== HANDLER DE AÇÃO — SALVA LEAD E REDIRECIONA =====
+    function handleActionClick(e) { 
+      const btn = e.target.closest('.action-btn'); 
+      if (!btn) return; 
+      handleAction(btn.dataset.action); 
+    }
+
+    async function handleAction(action) {
+      // 1. Salva lead qualificado no backend
+      await saveLeadToBackend(action);
+      
+      // 2. Gera resumo e monta URL do WhatsApp
+      const summary = generateConversationSummary();
+      const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(summary)}`;
+      
+      // 3. Feedback visual no chat
+      addDonMessage(`✅ Redirecionando para WhatsApp com o resumo da sua solicitação. Nossa equipe irá te atender em breve!`, false);
+      
+      // 4. Abre WhatsApp em nova aba
+      window.open(whatsappUrl, '_blank');
+    }
+
+    // ===== FORMULÁRIO DE PARCEIRO INLINE =====
     function showPartnerForm() {
-      const msgEl = document.createElement('div');
+      const formHtml = `<div class="partner-form"><h4>Cadastro de Parceiro Instalador 🤝</h4><input type="text" id="partner-name" placeholder="Nome completo *" required><input type="text" id="partner-city" placeholder="Cidade de atuação *" required><input type="tel" id="partner-phone" placeholder="Telefone / WhatsApp *" required><input type="text" id="partner-crea" placeholder="CREA ou certificação (opcional)"><textarea id="partner-message" placeholder="Mensagem (opcional)"></textarea><button type="button" id="partner-submit">Enviar candidatura</button></div>`;
+      const msgEl = document.createElement('div'); 
       msgEl.className = 'message don';
-      const avatar = document.createElement('div');
-      avatar.className = 'message-avatar';
+      const avatar = document.createElement('div'); 
+      avatar.className = 'message-avatar'; 
       avatar.innerHTML = '<i data-lucide="snowflake" style="width:16px;height:16px;"></i>';
-      const bubble = document.createElement('div');
-      bubble.className = 'bubble';
-      bubble.innerHTML = `
-        <p>Que bom que quer ser parceiro! 🤝 Preencha os dados abaixo:</p>
-        <div class="partner-form">
-          <h4>Cadastro de Parceiro Instalador 🤝</h4>
-          <input type="text" id="partner-name"    placeholder="Nome completo *" />
-          <input type="text" id="partner-city"    placeholder="Cidade de atuação *" />
-          <input type="tel"  id="partner-phone"   placeholder="Telefone / WhatsApp *" />
-          <input type="text" id="partner-crea"    placeholder="CREA ou certificação (opcional)" />
-          <textarea          id="partner-message" placeholder="Mensagem (opcional)"></textarea>
-          <button type="button" id="partner-submit">Enviar candidatura</button>
-        </div>`;
-      msgEl.appendChild(avatar);
-      msgEl.appendChild(bubble);
-      messagesEl.appendChild(msgEl);
-      lucide.createIcons();
+      const bubble = document.createElement('div'); 
+      bubble.className = 'bubble'; 
+      bubble.innerHTML = `<p>Que bom que quer ser parceiro! 🤝 Preencha os dados abaixo ou clique no botão para falar direto no WhatsApp:</p><div class="action-buttons"><button class="action-btn" data-action="parceiro">📲 Preencher no WhatsApp</button></div>${formHtml}`;
+      msgEl.appendChild(avatar); 
+      msgEl.appendChild(bubble); 
+      messagesEl.appendChild(msgEl); 
+      lucide.createIcons(); 
       scrollToBottom();
-      document.getElementById('partner-submit').addEventListener('click', submitPartnerForm);
+      document.getElementById('partner-submit')?.addEventListener('click', submitPartnerForm);
+      bubble.querySelector('[data-action="parceiro"]')?.addEventListener('click', (e) => { 
+        e.stopPropagation(); 
+        handleAction('parceiro'); 
+      });
     }
 
     function submitPartnerForm() {
-      const name  = document.getElementById('partner-name')?.value.trim();
-      const city  = document.getElementById('partner-city')?.value.trim();
+      const name = document.getElementById('partner-name')?.value.trim();
+      const city = document.getElementById('partner-city')?.value.trim();
       const phone = document.getElementById('partner-phone')?.value.trim();
-      if (!name || !city || !phone) { alert('Por favor, preencha os campos obrigatórios (*).'); return; }
+      if (!name || !city || !phone) { 
+        alert('Por favor, preencha os campos obrigatórios (*).'); 
+        return; 
+      }
       const form = document.querySelector('.partner-form');
-      if (form) form.outerHTML = '<div class="form-confirmation">✅ Candidatura enviada! Nossa equipe entrará em contato em breve.</div>';
-      state.conversationHistory.push({ role: "assistant", content: `[Parceiro] Nome: ${name}, Cidade: ${city}, Contato: ${phone}` });
+      if (form) {
+        form.outerHTML = '<div class="form-confirmation">✅ Candidatura enviada! Clique no botão abaixo para confirmar no WhatsApp:</div><div class="action-buttons"><button class="action-btn" data-action="parceiro">📲 Confirmar no WhatsApp</button></div>';
+      }
+      state.conversationHistory.push({ 
+        role: "assistant", 
+        content: `[Parceiro] Nome: ${name}, Cidade: ${city}, Contato: ${phone}`,
+        timestamp: new Date().toISOString()
+      });
+      messagesEl.querySelector('[data-action="parceiro"]')?.addEventListener('click', (e) => { 
+        e.stopPropagation(); 
+        handleAction('parceiro'); 
+      });
+      // Salva lead imediatamente
+      saveLeadToBackend('parceiro');
     }
 
+    // ===== CONEXÃO COM BACKEND =====
     async function fetchDonResponse() {
       const response = await fetch(`${SERVER_URL}/api/chat`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-client-secret": CLIENT_SECRET
+        headers: { 
+          "Content-Type": "application/json", 
+          "x-client-secret": CLIENT_SECRET 
         },
         body: JSON.stringify({ messages: state.conversationHistory })
       });
-      if (!response.ok) {
-        const err = await response.json().catch(() => ({}));
-        throw new Error(err.error || `HTTP ${response.status}`);
+      if (!response.ok) { 
+        const err = await response.json().catch(() => ({})); 
+        throw new Error(err.error || `HTTP ${response.status}`); 
       }
-      const data = await response.json();
+      const data = await response.json(); 
       return data.content;
     }
 
     async function handleUserMessage(text) {
       if (state.isWaiting) return;
       if (!state.hasStartedChat) startChat();
-      addUserMessage(text);
-      disableInput();
-      state.isWaiting = true;
+      addUserMessage(text); 
+      disableInput(); 
+      state.isWaiting = true; 
       showLoading();
       try {
         const reply = await fetchDonResponse();
-        hideLoading();
+        hideLoading(); 
         addDonMessage(reply);
       } catch (error) {
-        hideLoading();
+        hideLoading(); 
         console.error('[Fetch Error]', error);
         showError("❌ Não consegui me conectar. Verifique sua conexão e tente novamente.");
         state.conversationHistory.pop();
-      } finally {
-        state.isWaiting = false;
-        enableInput();
-        inputEl.focus();
+      } finally { 
+        state.isWaiting = false; 
+        enableInput(); 
+        inputEl.focus(); 
       }
     }
 
